@@ -1,6 +1,6 @@
 import multer from 'multer';
 import path from 'path';
-import db from '../config/db.js';
+import { User } from '../models/UserModel.js';
 
 // Configuración de almacenamiento
 const storage = multer.diskStorage({
@@ -41,7 +41,7 @@ export const uploadAvatar = async (req, res) => {
         // Nota: En Windows las rutas usan backslash (\), las cambiamos a slash (/) para web
         const avatarPath = req.file.path.replace(/\\/g, "/"); 
 
-        await db.execute('UPDATE users SET avatar = ? WHERE id = ?', [avatarPath, req.user.id]);
+        await User.findByIdAndUpdate(req.user.id, { avatar: avatarPath });
 
         res.json({ message: 'Avatar actualizado', avatar: avatarPath });
     } catch (error) {

@@ -1,48 +1,57 @@
-import db from '../config/db.js';
+import mongoose from 'mongoose';
+
+const workoutSchema = new mongoose.Schema({
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String
+    },
+    difficulty: {
+        type: String
+    }
+}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
+
+const Workout = mongoose.model('Workout', workoutSchema);
 
 const WorkoutModel = {
     // Crear Rutina
     async create(userId, { title, description, difficulty }) {
-        const query = 'INSERT INTO workouts (user_id, title, description, difficulty) VALUES (?, ?, ?, ?)';
-        const [result] = await db.execute(query, [userId, title, description, difficulty]);
-        return result.insertId;
+        const workout = new Workout({ user_id: userId, title, description, difficulty });
+        await workout.save();
+        return workout._id; // Equivalent to insertId
     },
 
-    // Listar con Filtros (Requisito: Búsqueda y filtros )
+    // Listar con Filtros
     async findAllByUserId(userId, difficultyFilter = null) {
-        let query = 'SELECT * FROM workouts WHERE user_id = ?';
-        const params = [userId];
-
+        const query = { user_id: userId };
         if (difficultyFilter) {
-            query += ' AND difficulty = ?';
-            params.push(difficultyFilter);
+            query.difficulty = difficultyFilter;
         }
-        
-        query += ' ORDER BY created_at DESC';
-        const [rows] = await db.execute(query, params);
-        return rows;
+        return await Workout.find(query).sort({ created_at: -1 });
     },
 
-    // Ver Detalle (Requisito: Ver detalle [cite: 97])
+    // Ver Detalle
     async findById(id) {
-        const query = 'SELECT * FROM workouts WHERE id = ?';
-        const [rows] = await db.execute(query, [id]);
-        return rows[0];
+        return await Workout.findById(id);
     },
 
-    // Editar (Requisito: Editar [cite: 98])
+    // Editar
     async update(id, { title, description, difficulty }) {
-        const query = 'UPDATE workouts SET title = ?, description = ?, difficulty = ? WHERE id = ?';
-        const [result] = await db.execute(query, [title, description, difficulty, id]);
-        return result;
+        return await Workout.findByIdAndUpdate(id, { title, description, difficulty }, { new: true });
     },
 
-    // Eliminar (Requisito: Eliminar [cite: 99])
+    // Eliminar
     async delete(id) {
-        const query = 'DELETE FROM workouts WHERE id = ?';
-        const [result] = await db.execute(query, [id]);
-        return result;
+        return await Workout.findByIdAndDelete(id);
     }
 };
 
 export default WorkoutModel;
+export { Workout };

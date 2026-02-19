@@ -1,0 +1,19 @@
+Respuesta no autoritativa:
+Servidor:  UnKnown
+Address:  2a0c:5a80:0:2::1
+
+_mongodb._tcp.fittracker.henznli.mongodb.net	SRV service location:
+	  priority       = 0
+	  weight         = 0
+	  port           = 27017
+	  svr hostname   = ac-eyr0p9k-shard-00-01.henznli.mongodb.net
+_mongodb._tcp.fittracker.henznli.mongodb.net	SRV service location:
+	  priority       = 0
+	  weight         = 0
+	  port           = 27017
+	  svr hostname   = ac-eyr0p9k-shard-00-00.henznli.mongodb.net
+_mongodb._tcp.fittracker.henznli.mongodb.net	SRV service location:
+	  priority       = 0
+	  weight         = 0
+	  port           = 27017
+	  svr hostname   = ac-eyr0p9k-shard-00-02.henznli.mongodb.net

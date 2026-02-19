@@ -1,23 +1,42 @@
-import db from '../config/db.js';
+import mongoose from 'mongoose';
+
+const exerciseSchema = new mongoose.Schema({
+    workout_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Workout',
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    sets: {
+        type: Number,
+        required: true
+    },
+    reps: {
+        type: Number,
+        required: true
+    }
+}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
+
+const Exercise = mongoose.model('Exercise', exerciseSchema);
 
 const ExerciseModel = {
     async add(workoutId, { name, sets, reps }) {
-        const query = 'INSERT INTO exercises (workout_id, name, sets, reps) VALUES (?, ?, ?, ?)';
-        const [result] = await db.execute(query, [workoutId, name, sets, reps]);
-        return result;
+        const exercise = new Exercise({ workout_id: workoutId, name, sets, reps });
+        await exercise.save();
+        return exercise;
     },
 
     async getByWorkoutId(workoutId) {
-        const query = 'SELECT * FROM exercises WHERE workout_id = ?';
-        const [rows] = await db.execute(query, [workoutId]);
-        return rows;
+        return await Exercise.find({ workout_id: workoutId });
     },
     
     async delete(id) {
-        const query = 'DELETE FROM exercises WHERE id = ?';
-        const [result] = await db.execute(query, [id]);
-        return result;
+        return await Exercise.findByIdAndDelete(id);
     }
 };
 
 export default ExerciseModel;
+export { Exercise };

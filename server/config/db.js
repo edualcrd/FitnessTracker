@@ -1,17 +1,16 @@
-import mysql from 'mysql2/promise';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGO_URI);
+        console.log(`Conectado a MongoDB Atlas: ${conn.connection.host}`);
+    } catch (error) {
+        console.error(`Error de conexión a MongoDB: ${error.message}`);
+        process.exit(1);
+    }
+};
 
-console.log('Conexión a MySQL configurada');
-export default pool;
+export default connectDB;
